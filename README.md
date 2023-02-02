@@ -21,6 +21,15 @@ functions:
     runasuser: "0"
 ```
 
+## Build
+
+Build with:
+
+```
+make dist
+```
+
+
 ## faas-cli
 
 [![Build Status](https://github.com/openfaas/faas-cli/workflows/build/badge.svg?branch=master)](https://github.com/openfaas/faas-cli/actions)
