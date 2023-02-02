@@ -1,4 +1,5 @@
-##Extended faas-cli
+## Extended faas-cli
+
 new fields can be added to the function yaml file.
 
 - shm - array, name of the host mounted directories located in /dev/shm
