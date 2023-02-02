@@ -42,6 +42,15 @@ type FunctionDeployment struct {
 	// ReadOnlyRootFilesystem removes write-access from the root filesystem
 	// mount-point.
 	ReadOnlyRootFilesystem bool `json:"readOnlyRootFilesystem,omitempty"`
+
+	//SHM regions for the function
+	Shms []string `json:"shm,omitempty"`
+
+	//Describes if the function pod is privileged or not
+	Privileged bool `json:"privileged,omitempty"`
+
+	//runasuser value of the function container
+	RunAsUser string `json:"runasuser,omitempty"`
 }
 
 // FunctionResources Memory and CPU

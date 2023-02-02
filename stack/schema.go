@@ -65,6 +65,15 @@ type Function struct {
 
 	// BuildSecrets is a set of secrets to mount with buildkit
 	BuildSecrets map[string]string `yaml:"build_secrets,omitempty"`
+
+	//Shm regions for the function
+	Shms []string `yaml:"shm,omitempty"`
+
+	//Describes if the function pod is pivileged or not
+	Privileged bool `yaml:"privileged,omitempty"`
+
+	//Runasuser value of the function pod
+	RunAsUser string `yaml:"runasuser,omitempty"`
 }
 
 // Configuration for the stack.yml file

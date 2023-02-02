@@ -181,7 +181,6 @@ func runDeployCommand(args []string, image string, fprocess string, functionName
 
 			function.Name = k
 			fmt.Printf("Deploying: %s.\n", function.Name)
-
 			var functionConstraints []string
 			if function.Constraints != nil {
 				functionConstraints = *function.Constraints
@@ -260,6 +259,14 @@ Error: %s`, fprocessErr.Error())
 				function.ReadOnlyRootFilesystem = deployFlags.readOnlyRootFilesystem
 			}
 
+                        var functionShms []string
+                        if function.Shms != nil {
+                                functionShms = function.Shms
+                        }
+
+			var privileged bool = function.Privileged
+			var runasuser string = function.RunAsUser
+
 			deploySpec := &proxy.DeployFunctionSpec{
 				FProcess:                function.FProcess,
 				FunctionName:            function.Name,
@@ -277,8 +284,11 @@ Error: %s`, fprocessErr.Error())
 				TLSInsecure:             tlsInsecure,
 				Token:                   token,
 				Namespace:               function.Namespace,
+				Shms:			 functionShms,
+				Privileged:		 privileged,
+				RunAsUser:		 runasuser,
 			}
-
+			fmt.Println(len(deploySpec.Shms))
 			if msg := checkTLSInsecure(services.Provider.GatewayURL, deploySpec.TLSInsecure); len(msg) > 0 {
 				fmt.Println(msg)
 			}
