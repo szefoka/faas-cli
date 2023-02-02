@@ -1,3 +1,26 @@
+##Extended faas-cli
+new fields can be added to the function yaml file.
+
+- shm - array, name of the host mounted directories located in /dev/shm
+- privlied
+- runasuser
+
+```
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  myfunc:
+    lang: python
+    handler: ./myfunc
+    image: <dockerhub_repository>/testfunc:latest
+    shm: 
+    - hello
+    privileged: true
+    runasuser: "0"
+```
+
 ## faas-cli
 
 [![Build Status](https://github.com/openfaas/faas-cli/workflows/build/badge.svg?branch=master)](https://github.com/openfaas/faas-cli/actions)
