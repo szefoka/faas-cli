@@ -48,6 +48,9 @@ type DeployFunctionSpec struct {
 	TLSInsecure             bool
 	Token                   string
 	Namespace               string
+	Shms			[]string
+	Privileged		bool
+	RunAsUser		string
 }
 
 func generateFuncStr(spec *DeployFunctionSpec) string {
