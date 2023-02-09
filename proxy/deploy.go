@@ -105,6 +105,9 @@ func (c *Client) deploy(context context.Context, spec *DeployFunctionSpec, updat
 		Annotations:            &spec.Annotations,
 		ReadOnlyRootFilesystem: spec.ReadOnlyRootFilesystem,
 		Namespace:              spec.Namespace,
+		Shms:			spec.Shms,
+		Privileged:		spec.Privileged,
+		RunAsUser:		spec.RunAsUser,
 	}
 
 	hasLimits := false
