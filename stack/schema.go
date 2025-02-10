@@ -45,6 +45,9 @@ type Function struct {
 	// Requests of resources requested by function
 	Requests *FunctionResources `yaml:"requests,omitempty"`
 
+    // EDF scheduler paramaters
+    EDFParams *FunctionEDFParams `yaml:"EDF,omitempty"`
+
 	// ReadOnlyRootFilesystem is used to set the container filesystem to read-only
 	ReadOnlyRootFilesystem bool `yaml:"readonly_root_filesystem,omitempty"`
 
@@ -95,6 +98,13 @@ type TemplateSource struct {
 type FunctionResources struct {
 	Memory string `yaml:"memory"`
 	CPU    string `yaml:"cpu"`
+}
+
+// FunctionEDFParams Runtime Deadline Period
+type FunctionEDFParams struct {
+    Runtime  string `yaml:"runtime"`
+    Deadline string `yaml:"deadline"`
+    Period   string `yaml:"period"`
 }
 
 // EnvironmentFile represents external file for environment data

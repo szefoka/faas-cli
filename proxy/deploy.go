@@ -48,6 +48,7 @@ type DeployFunctionSpec struct {
 	TLSInsecure             bool
 	Token                   string
 	Namespace               string
+    FunctionEDFParams       stack.FunctionEDFParams
 }
 
 func generateFuncStr(spec *DeployFunctionSpec) string {

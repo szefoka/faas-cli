@@ -36,6 +36,11 @@ func init() {
 	storeDeployCmd.Flags().StringVar(&memoryRequest, "memory-request", "", "Supply the memory request for the function in Mi")
 	storeDeployCmd.Flags().StringVar(&memoryLimit, "memory-limit", "", "Supply the memory limit for the function in Mi")
 
+    storeDeployCmd.Flags().StringVar(&edfRuntime, "edf-runtime", "", "EDF Runtime value")
+    storeDeployCmd.Flags().StringVar(&edfDeadline, "edf-deadline", "", "EDF Deadline value")
+    storeDeployCmd.Flags().StringVar(&edfPeriod, "edf-period", "", "EDF Period value")
+
+
 	// Set bash-completion.
 	_ = storeDeployCmd.Flags().SetAnnotation("handler", cobra.BashCompSubdirsInDir, []string{})
 
@@ -153,7 +158,10 @@ func runStoreDeploy(cmd *cobra.Command, args []string) error {
 		cpuRequest,
 		cpuLimit,
 		memoryRequest,
-		memoryLimit)
+		memoryLimit,
+        edfRuntime,
+        edfDeadline,
+        edfPeriod)
 
 	if badStatusCode(statusCode) {
 		failedStatusCode := map[string]int{itemName: statusCode}

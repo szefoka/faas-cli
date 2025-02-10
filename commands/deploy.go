@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"time"
+    "strconv"
+    "math"
 
 	"github.com/openfaas/faas-cli/builder"
 	"github.com/openfaas/faas-cli/proxy"
@@ -81,6 +83,10 @@ func init() {
 	deployCmd.Flags().StringVar(&cpuLimit, "cpu-limit", "", "Supply the CPU limit for the function in Mi (when not using a YAML file)")
 	deployCmd.Flags().StringVar(&memoryRequest, "memory-request", "", "Supply the memory request for the function in Mi (when not using a YAML file)")
 	deployCmd.Flags().StringVar(&memoryLimit, "memory-limit", "", "Supply the memory limit for the function in Mi (when not using a YAML file)")
+
+	deployCmd.Flags().StringVar(&edfRuntime, "edf-runtime", "", "EDF Runtime value (when not using a YAML file)")
+	deployCmd.Flags().StringVar(&edfDeadline, "edf-deadline", "", "EDF Deadline value (when not using a YAML file)")
+	deployCmd.Flags().StringVar(&edfPeriod, "edf-period", "", "EDF Period value (when not using a YAML file)")
 
 	faasCmd.AddCommand(deployCmd)
 }
@@ -323,7 +329,10 @@ Error: %s`, fprocessErr.Error())
 			cpuRequest,
 			cpuLimit,
 			memoryRequest,
-			memoryLimit)
+			memoryLimit,
+            edfRuntime,
+            edfDeadline,
+            edfPeriod)
 		if err != nil {
 			return err
 		}
@@ -357,6 +366,9 @@ func deployImage(
 	cpuLimit string,
 	memoryRequest string,
 	memoryLimit string,
+    edfRuntime string,
+    edfDeadline string,
+    edfPeriod string,
 ) (int, error) {
 
 	var statusCode int
@@ -392,6 +404,7 @@ func deployImage(
 		Labels:                  labelMap,
 		Annotations:             annotationMap,
 		FunctionResourceRequest: proxy.FunctionResourceRequest{},
+        FunctionEDFParams:       stack.FunctionEDFParams{},
 		ReadOnlyRootFilesystem:  readOnlyRFS,
 		TLSInsecure:             tlsInsecure,
 		Token:                   token,
@@ -410,6 +423,26 @@ func deployImage(
 			Memory: memoryLimit,
 		}
 	}
+
+    if len(edfRuntime) > 0 && len(edfPeriod) > 0 {
+        runtime, err := strconv.Atoi(edfRuntime)
+        if err != nil {
+            return statusCode, fmt.Errorf("error parsing annotations: %v", annotationErr)
+        }
+        period, err := strconv.Atoi(edfPeriod)
+        if err != nil {
+            return statusCode, fmt.Errorf("error parsing annotations: %v", annotationErr)
+        }
+        deploySpec.FunctionResourceRequest.Requests = &stack.FunctionResources{
+            CPU: strconv.Itoa(int(math.Ceil((float64(runtime)/float64(period)))*100)),
+        }
+        deploySpec.FunctionResourceRequest.Limits = &stack.FunctionResources{
+            CPU: strconv.Itoa(int(math.Ceil((float64(runtime)/float64(period)))*100)),
+        }
+        if len(edfDeadline) == 0 {
+            edfDeadline = edfRuntime
+        }
+    }
 
 	if msg := checkTLSInsecure(gateway, deploySpec.TLSInsecure); len(msg) > 0 {
 		fmt.Println(msg)

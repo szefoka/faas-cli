@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+    "strconv"
+    "math"
 
 	"github.com/openfaas/faas-cli/builder"
 	"github.com/openfaas/faas-cli/stack"
@@ -24,6 +26,9 @@ var (
 	cpuLimit      string
 	memoryRequest string
 	cpuRequest    string
+    edfRuntime    string
+    edfDeadline   string
+    edfPeriod     string
 )
 
 func init() {
@@ -35,8 +40,12 @@ func init() {
 	newFunctionCmd.Flags().StringVar(&memoryLimit, "memory-limit", "", "Set a limit for the memory")
 	newFunctionCmd.Flags().StringVar(&cpuLimit, "cpu-limit", "", "Set a limit for the CPU")
 
-	newFunctionCmd.Flags().StringVar(&memoryRequest, "memory-request", "", "Set a request or the memory")
+	newFunctionCmd.Flags().StringVar(&memoryRequest, "memory-request", "", "Set a request for the memory")
 	newFunctionCmd.Flags().StringVar(&cpuRequest, "cpu-request", "", "Set a request value for the CPU")
+
+    newFunctionCmd.Flags().StringVar(&edfRuntime, "edf-runtime", "", "Sets the EDF runtime")
+    newFunctionCmd.Flags().StringVar(&edfDeadline, "edf-deadline", "", "Sets the EDF deadline")
+    newFunctionCmd.Flags().StringVar(&edfPeriod, "edf-period", "", "Sets the EDF period")
 
 	newFunctionCmd.Flags().BoolVar(&list, "list", false, "List available languages")
 	newFunctionCmd.Flags().StringVarP(&appendFile, "append", "a", "", "Append to existing YAML file")
@@ -257,6 +266,27 @@ Download templates:
 			Memory: memoryRequest,
 		}
 	}
+
+    if len(edfRuntime) > 0 && len(edfPeriod) > 0 {
+        runtime, err := strconv.Atoi(edfRuntime)
+        if err != nil {
+            return fmt.Errorf("error reading language template: %s", err.Error())
+        }
+        period, err := strconv.Atoi(edfPeriod)
+        if err != nil {
+            return fmt.Errorf("error reading language template: %s", err.Error())
+        }
+        function.Requests = &stack.FunctionResources{
+            CPU: strconv.Itoa(int(math.Ceil((float64(runtime)/float64(period)))*100)),
+        }
+        function.Limits = &stack.FunctionResources{
+            CPU: strconv.Itoa(int(math.Ceil((float64(runtime)/float64(period)))*100)),
+        }
+        if len(edfDeadline) == 0 {
+            edfDeadline = edfRuntime
+        }
+    }
+
 
 	yamlContent := prepareYAMLContent(appendMode, gateway, &function)
 
