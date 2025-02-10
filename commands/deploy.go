@@ -247,6 +247,28 @@ Error: %s`, fprocessErr.Error())
 				Requests: function.Requests,
 			}
 
+            functionEDFParams := function.EDFParams
+
+            if len(functionEDFParams.Runtime) > 0 && len(functionEDFParams.Period) > 0 {
+                runtime, err := strconv.Atoi(functionEDFParams.Runtime)
+                if err != nil {
+                    return fmt.Errorf("error: %v", err)
+                }
+                period, err := strconv.Atoi(functionEDFParams.Period)
+                if err != nil {
+                    return fmt.Errorf("error: %v", err)
+                }
+                /*functionResourceRequest.Requests = &stack.FunctionResources{
+                    CPU: strconv.Itoa(int(float64(runtime)/float64(period)*1000))+"m",
+                }*/
+                functionResourceRequest.Limits = &stack.FunctionResources{
+                    CPU: strconv.Itoa(int(float64(runtime)/float64(period)*1000))+"m",
+                }
+                if len(edfDeadline) == 0 {
+                    edfDeadline = edfRuntime
+                }
+            }
+
 			var annotations map[string]string
 			if function.Annotations != nil {
 				annotations = *function.Annotations
@@ -283,11 +305,14 @@ Error: %s`, fprocessErr.Error())
 				Labels:                  allLabels,
 				Annotations:             allAnnotations,
 				FunctionResourceRequest: functionResourceRequest,
+                FunctionEDFParams:       functionEDFParams,
 				ReadOnlyRootFilesystem:  function.ReadOnlyRootFilesystem,
 				TLSInsecure:             tlsInsecure,
 				Token:                   token,
 				Namespace:               function.Namespace,
 			}
+            fmt.Println(deploySpec.FunctionEDFParams.Runtime)
+            fmt.Println(deploySpec.FunctionEDFParams.Deadline)
 
 			if msg := checkTLSInsecure(services.Provider.GatewayURL, deploySpec.TLSInsecure); len(msg) > 0 {
 				fmt.Println(msg)

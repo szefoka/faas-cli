@@ -46,7 +46,7 @@ type Function struct {
 	Requests *FunctionResources `yaml:"requests,omitempty"`
 
     // EDF scheduler paramaters
-    EDFParams *FunctionEDFParams `yaml:"EDF,omitempty"`
+    EDFParams FunctionEDFParams `yaml:"EDF,omitempty"`
 
 	// ReadOnlyRootFilesystem is used to set the container filesystem to read-only
 	ReadOnlyRootFilesystem bool `yaml:"readonly_root_filesystem,omitempty"`
