@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+    "strconv"
 
 	"github.com/openfaas/faas-cli/stack"
 
@@ -118,6 +119,12 @@ func (c *Client) deploy(context context.Context, spec *DeployFunctionSpec, updat
 	if !hasLimits {
 		req.Limits = nil
 	}
+
+    if spec.FunctionEDFParams.Runtime != strconv.Itoa(0) {
+        req.EDFParams.Runtime = spec.FunctionEDFParams.Runtime
+        req.EDFParams.Deadline = spec.FunctionEDFParams.Deadline
+        req.EDFParams.Period = spec.FunctionEDFParams.Period
+    }
 
 	hasRequests := false
 	req.Requests = &types.FunctionResources{}

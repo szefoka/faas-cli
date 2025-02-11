@@ -40,7 +40,7 @@ type FunctionDeployment struct {
 	Requests *FunctionResources `json:"requests,omitempty"`
 
     // EDF Parameters for the function
-    EDFParams *FunctionEDFParams `json:"EDF,omitempty"`
+    EDFParams FunctionEDFParams `json:"EDF,omitempty"`
 
 	// ReadOnlyRootFilesystem removes write-access from the root filesystem
 	// mount-point.
